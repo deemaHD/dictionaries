@@ -11,14 +11,12 @@ const middleware = store => next => action => {
 
   action.promise
     .then(data => {
-      console.log(data);
       store.dispatch({
         type: succesAction,
         data: data
       })
     })
     .catch(err => {
-      console.log(err);
       store.dispatch({
         type: failureAction,
         err

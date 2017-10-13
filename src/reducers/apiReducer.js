@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const defaultState = {
   data: [],
   structure: [],
@@ -5,6 +7,7 @@ const defaultState = {
   loading: false,
   limit: 10,
   offset: 0,
+  defaultPageSize: 20,
   fetchError: ''
 };
 
@@ -13,27 +16,34 @@ function apiReducer (state = defaultState, action) {
     case 'START_LOADING':
       return { ...state, loading: true };
     case 'FINISH_LOADING':
-      // kostyl for fit api structure
       action.data.data.forEach(item => {
         item.niches = null;
       });
 
-      let structure = [];
-
-      for (let key in action.data.model.structure) {
-        structure.push({ Header: key, accessor: key });
-      }
-
       return {
         ...state,
-        structure,
+        structure: action.data.model.structure,
         loading: false,
         data: action.data.data,
         pages: Math.floor(action.data.count / state.limit)
       };
     case 'LOADING_FAILURE':
       console.log('LOADING_FAILURE');
-      return { ...state, fetchError: 'Loading failure' };
+      return { ...state, fetchError: 'Loading failure', loading: false };
+    case 'START_DELETING':
+      return state;
+    case 'DELETING_SUCCESS':
+      const pageData = _.cloneDeep(state.data);
+
+      pageData.forEach((row, index) => {
+        if (row.id === action.data.id) {
+          pageData[index] = action.data;
+        }
+      });
+
+      return { ...state, data: pageData };
+    case 'DELETING_FAILURE':
+      return state;
     default:
       return state;
   }

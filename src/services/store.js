@@ -1,12 +1,12 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import apiReducer from '../reducers/apiReducer';
-import middleware from '../middleware/promises';
+import promiseMiddleware from '../middleware/promiseMiddleware';
 
 const reducer = combineReducers({
   grid: apiReducer,
 });
 
-let createStoreWithMiddleware = applyMiddleware(middleware)(createStore);
+let createStoreWithMiddleware = applyMiddleware(promiseMiddleware)(createStore);
 
 const store = createStoreWithMiddleware(reducer);
 
